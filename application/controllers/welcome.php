@@ -4,9 +4,7 @@ class Welcome extends CI_Controller {
 
 	public function index()
 	{
-		$this->load->view('welcome');
+        $data['page_title'] = 'Block Viewer';
+		$this->load->view('welcome', $data);
 	}
 }
-
-/* End of file welcome.php */
-/* Location: ./application/controllers/welcome.php */
