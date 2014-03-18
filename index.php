@@ -1,190 +1,205 @@
-﻿<?php
+<?php
 
-	require_once ("src/PPC_daemon.php");
-	require_once ("src/PPC_layout.php");
-	require_once ("src/stats_controller.php");
-	
-	
-//	If a block hash was provided the block detail is shown
-	if (isset ($_REQUEST["block_hash"]))
+/*
+ *---------------------------------------------------------------
+ * APPLICATION ENVIRONMENT
+ *---------------------------------------------------------------
+ *
+ * You can load different configurations depending on your
+ * current environment. Setting the environment also influences
+ * things like logging and error reporting.
+ *
+ * This can be set to anything, but default usage is:
+ *
+ *     development
+ *     testing
+ *     production
+ *
+ * NOTE: If you change these, also change the error_reporting() code below
+ *
+ */
+	define('ENVIRONMENT', 'development');
+/*
+ *---------------------------------------------------------------
+ * ERROR REPORTING
+ *---------------------------------------------------------------
+ *
+ * Different environments will require different levels of error reporting.
+ * By default development will show errors but testing and live will hide them.
+ */
+
+if (defined('ENVIRONMENT'))
+{
+	switch (ENVIRONMENT)
 	{
-		site_header ("Block Detail Page");
-		
-		block_detail ($_REQUEST["block_hash"], TRUE);
+		case 'development':
+			error_reporting(E_ALL);
+		break;
+	
+		case 'testing':
+		case 'production':
+			error_reporting(0);
+		break;
+
+		default:
+			exit('The application environment is not set correctly.');
 	}
-	
-//	If a block height is provided the block detail is shown
-	elseif (isset ($_REQUEST["block_height"]))
+}
+
+/*
+ *---------------------------------------------------------------
+ * SYSTEM FOLDER NAME
+ *---------------------------------------------------------------
+ *
+ * This variable must contain the name of your "system" folder.
+ * Include the path if the folder is not in the same  directory
+ * as this file.
+ *
+ */
+	$system_path = 'system';
+
+/*
+ *---------------------------------------------------------------
+ * APPLICATION FOLDER NAME
+ *---------------------------------------------------------------
+ *
+ * If you want this front controller to use a different "application"
+ * folder then the default one you can set its name here. The folder
+ * can also be renamed or relocated anywhere on your server.  If
+ * you do, use a full server path. For more info please see the user guide:
+ * http://codeigniter.com/user_guide/general/managing_apps.html
+ *
+ * NO TRAILING SLASH!
+ *
+ */
+	$application_folder = 'application';
+
+/*
+ * --------------------------------------------------------------------
+ * DEFAULT CONTROLLER
+ * --------------------------------------------------------------------
+ *
+ * Normally you will set your default controller in the routes.php file.
+ * You can, however, force a custom routing by hard-coding a
+ * specific controller class/function here.  For most applications, you
+ * WILL NOT set your routing here, but it's an option for those
+ * special instances where you might want to override the standard
+ * routing in a specific front controller that shares a common CI installation.
+ *
+ * IMPORTANT:  If you set the routing here, NO OTHER controller will be
+ * callable. In essence, this preference limits your application to ONE
+ * specific controller.  Leave the function name blank if you need
+ * to call functions dynamically via the URI.
+ *
+ * Un-comment the $routing array below to use this feature
+ *
+ */
+	// The directory name, relative to the "controllers" folder.  Leave blank
+	// if your controller is not in a sub-folder within the "controllers" folder
+	// $routing['directory'] = '';
+
+	// The controller class file name.  Example:  Mycontroller
+	// $routing['controller'] = '';
+
+	// The controller function you wish to be called.
+	// $routing['function']	= '';
+
+
+/*
+ * -------------------------------------------------------------------
+ *  CUSTOM CONFIG VALUES
+ * -------------------------------------------------------------------
+ *
+ * The $assign_to_config array below will be passed dynamically to the
+ * config class when initialized. This allows you to set custom config
+ * items or override any default config values found in the config.php file.
+ * This can be handy as it permits you to share one application between
+ * multiple front controller files, with each file containing different
+ * config values.
+ *
+ * Un-comment the $assign_to_config array below to use this feature
+ *
+ */
+	// $assign_to_config['name_of_config_item'] = 'value of config item';
+
+
+
+// --------------------------------------------------------------------
+// END OF USER CONFIGURABLE SETTINGS.  DO NOT EDIT BELOW THIS LINE
+// --------------------------------------------------------------------
+
+/*
+ * ---------------------------------------------------------------
+ *  Resolve the system path for increased reliability
+ * ---------------------------------------------------------------
+ */
+
+	// Set the current directory correctly for CLI requests
+	if (defined('STDIN'))
 	{
-		site_header ("Block Detail Page");
+		chdir(dirname(__FILE__));
+	}
 
-		$block_height = $_REQUEST["block_height"];
+	if (realpath($system_path) !== FALSE)
+	{
+		$system_path = realpath($system_path).'/';
+	}
 
-		if(empty ($block_height))
+	// ensure there's a trailing slash
+	$system_path = rtrim($system_path, '/').'/';
+
+	// Is the system path correct?
+	if ( ! is_dir($system_path))
+	{
+		exit("Your system folder path does not appear to be set correctly. Please open the following file and correct this: ".pathinfo(__FILE__, PATHINFO_BASENAME));
+	}
+
+/*
+ * -------------------------------------------------------------------
+ *  Now that we know the path, set the main path constants
+ * -------------------------------------------------------------------
+ */
+	// The name of THIS file
+	define('SELF', pathinfo(__FILE__, PATHINFO_BASENAME));
+
+	// The PHP file extension
+	// this global constant is deprecated.
+	define('EXT', '.php');
+
+	// Path to the system folder
+	define('BASEPATH', str_replace("\\", "/", $system_path));
+
+	// Path to the front controller (this file)
+	define('FCPATH', str_replace(SELF, '', __FILE__));
+
+	// Name of the "system folder"
+	define('SYSDIR', trim(strrchr(trim(BASEPATH, '/'), '/'), '/'));
+
+
+	// The path to the "application" folder
+	if (is_dir($application_folder))
+	{
+		define('APPPATH', $application_folder.'/');
+	}
+	else
+	{
+		if ( ! is_dir(BASEPATH.$application_folder.'/'))
 		{
-			$network_info = getinfo ();
-			// Default to the latest block
-			$block_height = intval($network_info["blocks"]);
+			exit("Your application folder path does not appear to be set correctly. Please open the following file and correct this: ".SELF);
 		}
-		
-		block_detail ($block_height);
-	}
-	
-//	If a TXid was provided the TX Detail is shown
-	elseif (isset ($_REQUEST["transaction"]))
-	{
-		site_header ("Transaction Detail Page");
-		
-		tx_detail ($_REQUEST["transaction"]);
-	}
-	
-//	If there were no request parameters the menu is shown
-	else {
-		site_header("Block Viewer");
-		
-		
-		$network_info = getinfo ();
-		$difficulty_info = getdifficulty ();
 
-
-
-/*		$net_speed = getnetworkhashps ();
-		if ($net_speed != "") {
-			echo "		<div class=\"node_detail\">\n";
-			echo "			<span class=\"node_desc\">Network H/s:</span><br>\n";
-			echo "			".$net_speed."\n";
-			echo "		</div>\n";
-			echo "\n";
-		}*/
-?>
-<div id="site_menu">
-	<p class="center"></p>
-	<center>Explore the Peercoin blockchain by looking for a Block Number (Index), Block Hash, or Transaction ID.</center>
-	<div class="menu_item">
-		<form action="<?php $_SERVER["PHP_SELF"]; ?>" method="post">
-			<label for="block_height" class="menu_desc">Enter a Block Number</label><br>
-			<input class="form-control" type="text" name="block_height" id="block_height">
-			<input class="btn btn-success" type="submit" name="submit" value="Jump To Block">
-		</form>
-	</div>
-
-	<div class="menu_item">
-		<form action="/index.php" method="post">
-			<label for="block_hash" class="menu_desc">Enter a Block Hash</label><br>
-			<input class="form-control" type="text" name="block_hash" id="block_hash">
-			<input class="btn btn-success" type="submit" name="submit" value="Jump To Block">
-		</form>
-	</div>
-
-	<div class="menu_item">
-		<form action="/index.php" method="post">
-			<label for="transaction" class="menu_desc">Enter a Transaction ID</label><br>
-			<input class="form-control" type="text" name="transaction" id="transaction">
-			<input class="btn btn-success" type="submit" name="submit" value="Jump To TX">
-		</form>
-		<div class="menu_item">
-			<p class="menu_desc"><center>Find out more on Peercoin (PPC)</center></p>
-			<a href="http://peercoin.net" target="_blank"><center>Visit Peercoin.net Official Peercoin Website</center></a> 		</div>
-			<a href="http://www.peercointalk.org" target="_blank"><center>Official Peercoin Forum</center></a> 	
-		</div>
-	</div>
-
-<?php
-
-	site_stats();
-	
-	// Total Coins
-	$totalcoins = intval($network_info["moneysupply"]);
-	$totalcoins = number_format($totalcoins, 0 , '.' , ',');
-
-	//Minted Reward last 1h/24h
-	$hours = 1;
-	list ($POS1, $POW1, $POScoins1, $POWcoins1, $avgPOScoins1, $avgPOWcoins1) = get_num_pos($hours);
-	list ($POS24, $POW24, $POScoins24, $POWcoins24, $avgPOScoins24, $avgPOWcoins24) = get_num_pos($hours * 24);
-
-	// Total Blocks
-	$totalblocks = intval($network_info["blocks"]);
-
-	// POS:POW Ratio
-	$ratio1 = ratio($POS1, $POW1); 
-	$ratio24 = ratio($POS24, $POW24);
-?>
-
-
-<div class="coin-overview">
-	<dl>
-		<dt>Total Coins:</dt>
-		<dd><?php echo $totalcoins; ?></dd>
-	</dl>
-	<dl>
-		<dt>Price:</dt>
-		<dd><span id="ticker">Loading...</span></dd>
-	</dl>
-	<dl>
-		<dt>Market Capitalization:</dt>
-		<dd><span id="marketcap">Loading...</span></dd>
-	</dl>
-	<dl>
-		<dt>PoS Difficulty:</dt>
-		<dd><?php echo $difficulty_info["proof-of-stake"]; ?></dd>
-	</dl>
-	<dl>
-		<dt>PoW Difficulty:</dt>
-		<dd><?php echo $difficulty_info["proof-of-work"]; ?></dd>
-	</dl>
-	<dl>
-		<dt>PoS Minting Reward (last 1h/24h):</dt>
-		<dd><?php echo $POScoins1 . "/" . $POScoins24; ?></dd>
-	</dl>
-	<dl>
-		<dt>Average PoS Minting Reward (last 1h/24h):</dt>
-		<dd><?php echo round($avgPOScoins1, 2) . "/" . round($avgPOScoins24, 2); ?></dd>
-	</dl>
-	<dl>
-		<dt>PoW Mining Reward (last 1h/24h):</dt>
-		<dd><?php echo $POWcoins1  . "/" . $POWcoins24; ?></dd>
-	</dl>
-	<dl>
-		<dt>Average PoW Mining Reward (last 1h/24h):</dt>
-		<dd><?php echo round($avgPOWcoins1, 2)  . "/" . round($avgPOWcoins24, 2); ?></dd>
-	</dl>
-	<dl>
-		<dt>Total Blocks:</dt>
-		<dd><?php echo number_format($totalblocks, 0 , '.' , ','); ?>Blocks</dd>
-	</dl>
-	<dl>
-		<dt>PoS Blocks (last 1h/24h):</dt>
-		<dd><?php echo $POS1 . "/" . $POS24; ?></dd>
-	</dl>
-	<dl>
-		<dt>PoW Blocks (last 1h/24h):</dt>
-		<dd><?php echo $POW1  . "/" . $POW24; ?></dd>
-	</dl>
-	<dl>
-		<dt>PoS:PoW Ratio 1h/24:</dt>
-		<dd><?php echo $ratio1 . "/" . $ratio24; ?></dd>
-	</dl>
-	<dl class="last">
-		<dt>Connections:</dt>
-		<dd><?php echo $network_info["connections"]; ?></dd>
-	</dl>
-	
-	<p><a href="http://www.peercointalk.org" target="_blank">Brought to you by FuzzyBear and PeercoinTalk.org</a></p>
-	<div class="logolink">
-		<a href="http://peercoin.net" target="_blank"><img id="peercoin_logo" src="http://merchanttools.peercointalk.org/Logo/Logo.png" alt="Peercoin Logo" title="Peercoin Logo"></a>
-	</div>
-</div>
-
-	
-<?php
-
+		define('APPPATH', BASEPATH.$application_folder.'/');
 	}
 
-	site_footer ();
+/*
+ * --------------------------------------------------------------------
+ * LOAD THE BOOTSTRAP FILE
+ * --------------------------------------------------------------------
+ *
+ * And away we go...
+ *
+ */
+require_once BASEPATH.'core/CodeIgniter.php';
 
-/******************************************************************************
-	This script is Copyright � 2013 Jake Paysnoe.
-	I hereby release this script into the public domain.
-	Jake Paysnoe Jun 26, 2013
-******************************************************************************/
-?>
+/* End of file index.php */
+/* Location: ./index.php */
