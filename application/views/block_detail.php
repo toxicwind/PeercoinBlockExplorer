@@ -10,79 +10,51 @@
     <?php include('head.php'); ?>
     
     <div id="page_wrap">
-        <div class="block_banner">
-
-            <div class="blockbanner_left">
-                Block Height: <?php echo $raw_block["height"]; ?>
-            </div>
-
-            <div class="blockbanner_right">
-                Block Time: <?php echo $raw_block["time"]; ?>
-            </div>
-
-        </div>
-
-        <div class="blockdetail">
-
-            <div class="blockdetail_detail">
-                <div class="blockdetail_header">Block Version</div>     
-                <div class="blockdetail_content">
-                    <?php echo $raw_block["flags"]; ?>
-                </div>      
-            </div>
-
-            <div class="blockdetail_detail">
-                <div class="blockdetail_header">Block Size</div>        
-                <div class="blockdetail_content">
-                    <?php echo $raw_block["size"]; ?>
-                </div>      
-            </div>
-
-            <div class="blockdetail_detail">
-                <div class="blockdetail_header">Mint Value</div>        
-                <div class="blockdetail_content">
-                    <?php echo $raw_block["mint"]; ?>
-                </div>      
-            </div>
-
-        </div>
-
-        <div class="blockdetail">
-
-            <div class="blockdetail_detail">
-                <div class="blockdetail_header">Block Bits</div>        
-                <div class="blockdetail_content">
-                    <?php echo $raw_block["bits"]; ?>
-                </div>      
-            </div>
-
-            <div class="blockdetail_detail">
-                <div class="blockdetail_header">Block Nonce</div>       
-                <div class="blockdetail_content">
-                    <?php echo $raw_block["nonce"]; ?>
-                </div>      
-            </div>
-
-            <div class="blockdetail_detail">
-                <div class="blockdetail_header">Block Difficulty</div>      
-                <div class="blockdetail_content">
-                    <?php echo $raw_block["difficulty"]; ?>
-                </div>      
-            </div>
-
-        </div>
-        
-        <div class="detail_display">
-            <div class="detail_title">Merkle Root</div>
-            <div class="detail_data"><?php $raw_block["merkleroot"]; ?></div>
-        </div>
-        <div class="detail_display">
-            <div class="detail_title">Block Hash</div>
-            <div class="detail_data">
-                <a href="" title="View Block Details">
-                    <?php $raw_block["block_hash"]; ?>
-                </a>
-            </div>
+        <div class="coin-overview detail-overview">
+            <dl>
+                <dt>Block Height:</dt>
+                <dd><b><?php echo $raw_block["height"]; ?></b></dd>
+            </dl>
+            <dl>
+                <dt>Block Time:</dt>
+                <dd><?php echo $raw_block["time"]; ?></dd>
+            </dl>
+            <dl>
+                <dt>Block Version</dt>
+                <dd><?php echo $raw_block["flags"]; ?></dd>
+            </dl>
+            <dl>
+                <dt>Block Size</dt>
+                <dd><?php echo $raw_block["size"]; ?>B</dd>
+            </dl>
+            <dl>
+                <dt>Mint Value</dt>
+                <dd><?php echo $raw_block["mint"]; ?></dd>
+            </dl>
+            <dl>
+                <dt>Block Bits</dt>
+                <dd><?php echo $raw_block["bits"]; ?></dd>
+            </dl>
+            <dl>
+                <dt>Block Nonce</dt>
+                <dd><?php echo $raw_block["nonce"]; ?></dd>
+            </dl>
+            <dl>
+                <dt>Block Difficulty</dt>
+                <dd><?php echo $raw_block["difficulty"]; ?></dd>
+            </dl>
+            <dl>
+                <dt>Merkle Root</dt>
+                <dd><?php echo $raw_block["merkleroot"]; ?></dd>
+            </dl>
+            <dl>
+                <dt>Block Hash</dt>
+                <dd>
+                    <a href="<?php echo $_SERVER['PHP_SELF'].'?block_hash='.$raw_block['hash'] ?>" title="View Block Details">
+                    <?php echo $raw_block['hash']; ?>
+                    </a>
+                </dd>
+            </dl>
         </div>
 
         <div class="blocknav">

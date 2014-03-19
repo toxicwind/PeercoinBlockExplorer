@@ -44,7 +44,8 @@ body {
 	margin:10px auto;
 	overflow:auto;
 	}
-	
+
+/*home page coin overview*/	
 .coin-overview{
 	text-align: left;
 	padding:20px;
@@ -71,6 +72,10 @@ body {
 	display: inline-block;
 }
 
+/*detail page, detail info*/
+.detail-overview dt{
+    width:180px;
+}
 
 #stats_wrap {
 	width:768px;
@@ -160,7 +165,7 @@ body {
 .blocknav {
 	width:740px;
 	margin:20px auto;
-	border-style:solid none;
+	border-top: 1px solid #3a3a3a;
 	clear:both;
 	overflow:auto;
 	}
@@ -214,30 +219,32 @@ body {
 	}
 	
 .txlist_header {
-	width:740px;
-	background-color:#20262b
 	margin:10px auto;
 	font-weight:bold;
 	font-family:serif;
 	line-height:32px;
 	vertical-align:middle;
-	color:#ffffff;
-	}
+    font-size: 16px;
+    border-bottom: 1px solid #3a3a3a;
+}
 	
 .txlist_wrap {
-	width:740px;
-	background-color:#3a3a3a;
 	margin:10px auto;
 	overflow:auto;
-	}
+}
 	
 .txlist_tx {
-	width:720px;
-	background-color:#ffffff;
-	margin:10px auto;
+	margin:10px;
 	font-family:mono-space;
-	line-height:32px;
-	}
+	line-height:26px;
+    border-bottom: 1px solid #dedede;
+}
+.txlist_tx a{
+    color:#457494;
+}
+.txlist_tx a:hover{
+    color:#457494;
+}
 	
 .section_head {
 	width:740px;

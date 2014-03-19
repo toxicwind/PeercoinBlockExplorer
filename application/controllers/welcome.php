@@ -24,8 +24,7 @@ class Welcome extends CI_Controller {
 
         //  If a TXid was provided the TX Detail is shown
         }elseif (isset ($_REQUEST["transaction"])) {
-            $data['page_title'] = 'Transaction Detail Page';
-            $this->load->view('tx_detail', $data);
+            $this->load_tx($_REQUEST["transaction"]);
 
         //  If there were no request parameters the menu is shown
         }else {
@@ -98,6 +97,14 @@ class Welcome extends CI_Controller {
         $this->load->view('block_detail', $data);
     }
 
+    function load_tx($tx_id){
+        $data['page_title'] = 'Transaction Detail Page';
+
+        $raw_tx = $this->ppc_daemon->getrawtransaction($tx_id);
+        $data['raw_tx'] = $raw_tx;
+
+        $this->load->view('tx_detail', $data);
+    }
 
     /**
     * Get the number of pos block in the last @param hours
