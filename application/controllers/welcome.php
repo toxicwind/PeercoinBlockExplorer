@@ -9,13 +9,18 @@ class Welcome extends CI_Controller {
 
         //  If a block hash was provided the block detail is shown
         if (isset ($_REQUEST["block_hash"])) {
-            $data['page_title'] = 'Block Detail Page';
-            $this->load->view('block_detail', $data);
+            $this->load_block_detail($_REQUEST["block_hash"], TRUE);
 
         //  If a block height is provided the block detail is show
         } elseif (isset ($_REQUEST["block_height"])) {
-            $data['page_title'] = 'Block Detail Page';
-            $this->load->view('block_detail', $data);
+            $block_height = $_REQUEST["block_height"];
+            if(empty ($block_height))
+            {
+                $network_info = $this->ppc_daemon->getinfo ();
+                // Default to the latest block
+                $block_height = intval($network_info["blocks"]);
+            }
+            $this->load_block_detail($block_height);
 
         //  If a TXid was provided the TX Detail is shown
         }elseif (isset ($_REQUEST["transaction"])) {
@@ -24,8 +29,6 @@ class Welcome extends CI_Controller {
 
         //  If there were no request parameters the menu is shown
         }else {
-            //$data['network_info'] = $this->ppc_daemon->getinfo();
-		    //$this->load->view('welcome', $data);
             $this->loadWelcome();
         }
         
@@ -75,6 +78,24 @@ class Welcome extends CI_Controller {
         $data['ratio24'] = $ratio24;
 
         $this->load->view('welcome', $data);
+    }
+
+    function load_block_detail($block_id, $hash=FALSE)
+    {
+        $data['page_title'] = 'Block Detail Page';
+
+        //$raw_block
+        if ($hash == TRUE) {
+            $raw_block = $this->ppc_daemon->getblock ($block_id);
+        }
+        else {
+            $block_hash = $this->ppc_daemon->getblockhash(intval ($block_id));
+            $raw_block = $this->ppc_daemon->getblock($block_hash);
+        }
+
+        $data['raw_block'] = $raw_block;
+
+        $this->load->view('block_detail', $data);
     }
 
 
