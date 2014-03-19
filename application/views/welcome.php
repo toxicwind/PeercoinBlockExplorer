@@ -47,13 +47,69 @@
     
     <div id="stats_wrap">
         <div class="coin-overview">
+            <dl>
+                <dt>Total Coins:</dt>
+                <dd><?php echo $totalcoins; ?></dd>
+            </dl>
+            <dl>
+                <dt>Price:</dt>
+                <dd><span id="ticker">Loading...</span></dd>
+            </dl>
+            <dl>
+                <dt>Market Capitalization:</dt>
+                <dd><span id="marketcap">Loading...</span></dd>
+            </dl>
+            <dl>
+                <dt>PoS Difficulty:</dt>
+                <dd><?php echo $difficulty_info["proof-of-stake"]; ?></dd>
+            </dl>
+            <dl>
+                <dt>PoW Difficulty:</dt>
+                <dd><?php echo $difficulty_info["proof-of-work"]; ?></dd>
+            </dl>
+            <dl>
+                <dt>PoS Minting Reward (last 1h/24h):</dt>
+                <dd><?php echo $POScoins1 . "/" . $POScoins24; ?></dd>
+            </dl>
+            <dl>
+                <dt>Average PoS Minting Reward (last 1h/24h):</dt>
+                <dd><?php echo round($avgPOScoins1, 2) . "/" . round($avgPOScoins24, 2); ?></dd>
+            </dl>
+            <dl>
+                <dt>PoW Mining Reward (last 1h/24h):</dt>
+                <dd><?php echo $POWcoins1  . "/" . $POWcoins24; ?></dd>
+            </dl>
+            <dl>
+                <dt>Average PoW Mining Reward (last 1h/24h):</dt>
+                <dd><?php echo round($avgPOWcoins1, 2)  . "/" . round($avgPOWcoins24, 2); ?></dd>
+            </dl>
+            <dl>
+                <dt>Total Blocks:</dt>
+                <dd><?php echo $totalblocks; ?>Blocks</dd>
+            </dl>
+            <dl>
+                <dt>PoS Blocks (last 1h/24h):</dt>
+                <dd><?php echo $POS1 . "/" . $POS24; ?></dd>
+            </dl>
+            <dl>
+                <dt>PoW Blocks (last 1h/24h):</dt>
+                <dd><?php echo $POW1  . "/" . $POW24; ?></dd>
+            </dl>
+            <dl>
+                <dt>PoS:PoW Ratio 1h/24:</dt>
+                <dd><?php echo $ratio1 . "/" . $ratio24; ?></dd>
+            </dl>
             <dl class="last">
                 <dt>Connections:</dt>
                 <dd><?php echo $network_info["connections"]; ?></dd>
             </dl>
+            
+            <p><a href="http://www.peercointalk.org" target="_blank">Brought to you by FuzzyBear and PeercoinTalk.org</a></p>
+            <div class="logolink">
+                <a href="http://peercoin.net" target="_blank"><img id="peercoin_logo" src="http://merchanttools.peercointalk.org/Logo/Logo.png" alt="Peercoin Logo" title="Peercoin Logo"></a>
+            </div>
         </div>
     </div>
-    
 	<?php include('foot.php'); ?>
 </body>
 </html>
